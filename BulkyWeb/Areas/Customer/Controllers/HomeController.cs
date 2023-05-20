@@ -1,5 +1,6 @@
 ﻿using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
+using BulkyBook.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -11,6 +12,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        public ShoppingCartVM ShoppingCartVM { get; set; }
         private readonly IUnitOfWork _unitOfWork;
 
         public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork)
@@ -22,6 +24,19 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
         public IActionResult Index()
         {
             IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category");
+            //var claimsIdentity = (ClaimsIdentity)User.Identity;
+            //var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            //ShoppingCartVM = new()
+            //{
+            //    ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId,
+            //    includeProperties: "Product")
+            //};
+            //int cartItemCount = 0;
+            //foreach (var a in ShoppingCartVM.ShoppingCartList)
+            //{
+            //    cartItemCount++;
+            //}
+            //ViewBag.CartItemCount = cartItemCount;
             return View(productList);
         }
         public IActionResult Details(int productId)
@@ -32,6 +47,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
                 Count = 1,
                 ProductId = productId
             };
+           
             return View(cart);
         
     }
