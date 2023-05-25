@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Stripe;
+using BulkyBook.DataAccess.DbInitializer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,8 +25,8 @@ builder.Services.ConfigureApplicationCookie(options => {
     options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
 builder.Services.AddAuthentication().AddFacebook(option => {
-    option.AppId = "3487716204829961";
-    option.AppSecret = "d09319125c21d4a6c14b56ab595c1a9a";
+    option.AppId = "786396129514059";
+    option.AppSecret = "987f81a07ae848596444afc4786d9977";
 });
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options => {
@@ -34,6 +35,7 @@ builder.Services.AddSession(options => {
     options.Cookie.IsEssential = true;
 });
 builder.Services.AddRazorPages();
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 //builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 var app = builder.Build();
@@ -54,6 +56,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 app.UseSession();
+SeedDatabase();
 app.MapRazorPages();
 
 app.MapControllerRoute(
@@ -61,3 +64,11 @@ app.MapControllerRoute(
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+void SeedDatabase()
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+        dbInitializer.Initialize();
+    }
+}
